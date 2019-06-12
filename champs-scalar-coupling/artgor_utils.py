@@ -22,7 +22,7 @@ import seaborn as sns
 from tqdm import tqdm_notebook
 
 import lightgbm as lgb
-#import xgboost as xgb
+import xgboost as xgb
 #from catboost import CatBoostRegressor, CatBoostClassifier
 from sklearn import metrics
 
@@ -51,11 +51,11 @@ def prepare_altair():
         'vega-embed': vega_embed_url + noext
     }
     
-    workaround = f"""    requirejs.config({{
+    workaround = """    requirejs.config({{
         baseUrl: 'https://cdn.jsdelivr.net/npm/',
-        paths: {paths}
+        paths: {}
     }});
-    """
+    """.format(paths)
     
     return workaround
     
@@ -184,7 +184,7 @@ def train_model_regression(X, X_test, y, params, folds, model_type='lgb', eval_m
     
     # split and train on folds
     for fold_n, (train_index, valid_index) in enumerate(folds.split(X)):
-        print(f'Fold {fold_n + 1} started at {time.ctime()}')
+        print('Fold {} started at {}'.format(fold_n + 1, time.ctime() ))
         if type(X) == np.ndarray:
             X_train, X_valid = X[columns][train_index], X[columns][valid_index]
             y_train, y_valid = y[train_index], y[valid_index]
@@ -216,7 +216,7 @@ def train_model_regression(X, X_test, y, params, folds, model_type='lgb', eval_m
             
             y_pred_valid = model.predict(X_valid).reshape(-1,)
             score = metrics_dict[eval_metric]['sklearn_scoring_function'](y_valid, y_pred_valid)
-            print(f'Fold {fold_n}. {eval_metric}: {score:.4f}.')
+            print('Fold {}. {}: {}.'.format(fold_n, eval_metric, score  ))
             print('')
             
             y_pred = model.predict(X_test).reshape(-1,)
@@ -311,7 +311,7 @@ def train_model_classification(X, X_test, y, params, folds, model_type='lgb', ev
     
     # split and train on folds
     for fold_n, (train_index, valid_index) in enumerate(folds.split(X)):
-        print(f'Fold {fold_n + 1} started at {time.ctime()}')
+        print('Fold {} started at {}'.format(fold_n + 1, time.ctime() ))
         if type(X) == np.ndarray:
             X_train, X_valid = X[columns][train_index], X[columns][valid_index]
             y_train, y_valid = y[train_index], y[valid_index]
@@ -343,7 +343,7 @@ def train_model_classification(X, X_test, y, params, folds, model_type='lgb', ev
             
             y_pred_valid = model.predict(X_valid).reshape(-1,)
             score = metrics_dict[eval_metric]['sklearn_scoring_function'](y_valid, y_pred_valid)
-            print(f'Fold {fold_n}. {eval_metric}: {score:.4f}.')
+            print('Fold {}. {}: {}.'.format(fold_n, eval_metric, score ))
             print('')
             
             y_pred = model.predict_proba(X_test)
